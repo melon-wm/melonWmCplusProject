@@ -57,6 +57,86 @@ void test01(){
 
 //全局变量
 int mya=10;
+
+//自定义的数据类型
+struct Maker1{
+    char name[64];
+    int age;
+};
+
+struct Maker3{
+    int a;
+    void func05(){//结构体内可以写函数
+        cout<<"wm\n";
+    }
+};
+
+void test05(){
+     Maker1 a;//可以不加struct就可以定义变量
+}
+
+void test06(){
+    Maker3 v;
+    v.func05();
+}
+
+/*void test07(){
+    int a=10;
+    int b=20;
+    printf("%d\n",a>b ? a:b);//在c中三目运算符返回的是右值，不能被修改（a>b?a:b）=100;这句语句就是错的
+    *(a>b?&a:&b)=100;
+    printf("%d\n",b);
+}*/
+
+void test08(){
+    int a=10;
+    int b=20;
+    (a>b?a:b)=100;//在c++中三目运算符返回的是左值
+    cout<<"a="<<a<<endl;
+    cout<<"b="<<b<<endl;
+}
+
+const int aa=10;//没有内存，在编译阶段编译器会把这行代码改成cout<<"aa="<<10<<endl;
+
+void test09(){
+    //发生了常量折叠
+    cout<<"aa="<<aa<<endl;//在编译阶段编译器会把这行代码改成cout<<"aa="<<10<<endl;
+    //volatile表示禁止编译器优化
+    volatile const int bb=20;
+    int* p =(int*)&bb;
+    *p=200;
+    cout<<"bb="<<bb<<endl;//这里c++的编译器会写成cout<<"bb=="<<20<<endl;所以输出还是20！！！
+    cout<<"*p="<<*p<<endl;
+    cout<<"bb的地址："<<(long int)&bb<<endl;//如果不转换，& 返回的是bool类型
+    cout<<"p所指向的地址："<<(long int)p<<endl;//其实指向的地址是相同的
+}
+
+void test10(){
+    int a=10;
+    const int b=a;//如果用变量给const修饰的局部变量赋值，那么编译器不会优化
+    int* pp=(int*)&b;
+    *pp=100;
+    cout<<"b="<<b<<endl;
+    cout<<"*p="<<*pp<<endl;
+}
+
+//自定义数据类型编译器不会优化
+struct mm{
+    mm(){
+        aaa=100;
+    }
+    int aaa;
+};
+
+void test11(){
+    const mm mmm;
+    mm* pt=(mm*)&mmm;
+    cout<<mmm.aaa<<endl;
+    pt->aaa=200;
+    cout<<mmm.aaa<<endl;//没有优化，因为是自定义数据
+
+}
+
 int main() {
     //cout是标准输出流对象
     //endl是刷新缓冲区，并换行
@@ -71,5 +151,17 @@ int main() {
     myMaker1::func1();
     test03();
     test04();
+    test05();
+    test06();
+    //c++不能进行隐形转换，只能显示转换
+    char* p=(char*)malloc(64);
+    test08();
+    test09();
+    //extern const int c;
+    extern const int dd;
+    //cout<<"c="<<c<<endl;//c++中const修饰的变量具有内部链接属性，别的文件不能使用,test.cpp中的全局常量别的文件不能用
+    cout<<"dd="<<dd<<endl;//test中的dd加了extern后，别的文件就可以使用了，c中只需要一个文件加上extern；
+    test10();
+    test11();
     return EXIT_SUCCESS;
 }
